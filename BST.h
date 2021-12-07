@@ -1,0 +1,155 @@
+#pragma once
+#include <iostream>
+#include <string>
+#include "User.h"
+using namespace std;
+
+
+template <typename T>
+class BST {
+    
+    struct node {
+        T data;
+        node* left;
+        node* right;
+    };
+
+    node* root;
+
+    node* makeEmpty(node* t) {
+        if(t == NULL)
+            return NULL;
+        {
+            makeEmpty(t->left);
+            makeEmpty(t->right);
+            delete t;
+        }
+        return NULL;
+    }
+
+    node* insert(T x, node* t)
+    {
+        if(t == NULL)
+        {
+            t = new node;
+            t->data = x;
+            t->left = t->right = NULL;
+        }
+        else if(x < t->data)
+            t->left = insert(x, t->left);
+        else if(x > t->data)
+            t->right = insert(x, t->right);
+        return t;
+    }
+
+    node* findMin(node* t)
+    {
+        if(t == NULL)
+            return NULL;
+        else if(t->left == NULL)
+            return t;
+        else
+            return findMin(t->left);
+    }
+
+    node* findMax(node* t) {
+        if(t == NULL)
+            return NULL;
+        else if(t->right == NULL)
+            return t;
+        else
+            return findMax(t->right);
+    }
+
+    node* remove(T x, node* t) {
+        node* temp;
+        if(t == NULL)
+            return NULL;
+        else if(x < t->data)
+            t->left = remove(x, t->left);
+        else if(x > t->data)
+            t->right = remove(x, t->right);
+        else if(t->left && t->right)
+        {
+            temp = findMin(t->right);
+            t->data = temp->data;
+            t->right = remove(t->data, t->right);
+        }
+        else
+        {
+            temp = t;
+            if(t->left == NULL)
+                t = t->right;
+            else if(t->right == NULL)
+                t = t->left;
+            delete temp;
+        }
+
+        return t;
+    }
+
+    void inorder(node* t) {
+        if(t == NULL)
+            return;
+        inorder(t->left);
+        cout << t->data << " ";
+        inorder(t->right);
+    }
+
+    bool find(node* t, T x) {
+        if(t == NULL)
+            return NULL;
+        else if(x < t->data)
+            return find(t->left, x);
+        else if(x > t->data)
+            return find(t->right, x);
+        else
+            return true;
+    }
+
+  node* findNode(node* t, T x) {
+    if(t == NULL || t->data == x)
+            return t;
+    else if(x < t->data)
+            return findNode(t->left, x);
+    else if(x > t->data)
+            return findNode(t->right, x);
+        else
+            return t;
+    }
+    
+
+public:
+    BST() {
+        root = NULL;
+    }
+
+    ~BST() {
+        root = makeEmpty(root);
+    }
+
+    void insert(T x) {
+        root = insert(x, root);
+    }
+
+    void remove(T x) {
+        root = remove(x, root);
+    }
+
+    void display() {
+        inorder(root);
+        cout << endl;
+    }
+
+    bool search(T x) {
+      return find(root, x);
+    }
+    void replace(T x, T y){
+        remove(x);
+        insert(y);
+    }
+  T searchTdata(T x) {
+    return (findNode(root, x))->data;
+  }
+
+};
